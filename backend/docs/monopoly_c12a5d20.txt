@@ -1,0 +1,238 @@
+Monopoly rules
+
+
+
+PLAY!
+
+CONTENTS
+Gameboard
+8 Tokens
+28 Title Deed Cards
+16 Chance Cards
+16 Community Chest Cards
+32 Houses
+12 Hotels
+2 Dice
+Money Pack
+Speed Die
+
+
+How to win
+Move around the board buying as many properties (Streets, Railroads, and Utilities) as you can.
+The more you own, the more rent you'll get.
+If you're the last player with any money when all other players have gone bankrupt, you win!
+
+
+Who goes first?
+Each player rolls both white dice.
+The highest roller starts.
+
+
+On your turn
+Roll both white dice.
+Move forward that number of spaces.
+Where did you land?(Check THE BOARD SPACES section of this guide.)
+If you rolled a double, roll the dice again, and take another turn.(Watch out! If you roll a double 3 times in the same turn, you must Go To Jail!)
+Your turn is over. The player on your left goes next.
+
+
+Start playing!
+That's all you need to know, so get going.
+Look up the spaces as you land on them.
+
+
+SET IT UP!
+1- Choose someone to read these rules out loud to all players.
+2- Give each player:
+5 x $1, 1 x $5, 2 x $10, 1 x $20, 1 x $50, 4 x $100, 2 x $500 (Total=$1500)
+Keep the rest of the money in the box as the Bank.
+3- Shuffle the Chance cards and place them facedown here.
+4- Shuffle the Community Chest cards and place them facedown here.
+5- Choose someone to be Banker.
+The Banker's in charge of:
+The Bank's money
+Houses
+Hotels
+Title Deed cards
+Auctions
+(The Banker can play too, but must keep their money separate from the Bank.)
+6- Each player chooses a token and places it on GO.
+7- Place the 2 white dice next to the board. If you want to use the red Speed Die, see
+ADVANCED rules.
+
+
+THE BOARD SPACES
+
+Streets:
+Unowned Streets
+When you land on a Street that no one owns, either buy it or auction it.
+Want to buy it?
+Pay the price on the board space and take the Title Deed card.
+
+Don't want to buy it?
+Then the Banker must auction it. Bids start at M$10. All players can bid.
+
+Owned Streets
+When you land on a Street that someone else owns, pay them the rent shown on the Street's Title Deed card.
+
+Collect color sets to build Houses!
+You can't build Houses until you get a color set!
+
+  Rent goes up on each Street as soon as you've got the set.
+  If you buy Houses, rent goes up even more!
+  Later you can upgrade to Hotels!(See BUILDINGS for more info.)
+
+
+Railroads
+
+Unowned Railroads
+When you land on a Railroad that no one owns, either buy it or auction it.
+
+Want to buy it?
+Pay the price on the board space and take the Title Deed card.
+
+Don't want to buy it?
+Then the Banker must auction it. Bids start at M$10. All players can bid.
+
+Owned Railroads
+When you land on a Railroad that someone else owns, pay them rent.
+Rent depends on how many Railrcads the owner has.
+1 Railroads Rent M$25
+2 Railroads Rent M$50
+3 Railroads Rent M$100
+4 Railroads Rent M$200
+
+
+Utilities
+
+Unowned Utilities
+When you land on a tility that no one owns, either buy it or auction it.
+
+Want to buy it?
+Pay the price on the board space and take the Title Deed card.
+
+Don't want to buy it?
+Then the Banker must auction it. Bids start at M$10. All players can bid.
+
+Owned Utilities
+When you land on a Utility that sorneone else owns, pay them rent.
+Roll the dice again to decide rent. If owner has 1 Utility, rent is 4x the dice roll. If owner has 2 Utilities, rent is 10x the dice roll.
+
+Action Spaces
+
+GO
+If your move took you onto or past the
+GO space, collect M$200 from the Bank.
+
+Chance / Community Chest
+Take the top card from the matching pile and immediately do what it says. Return it to the bottom of the pile when done.
+
+Income Tax / Luxury Tax
+Pay the Bank the amount shown on the space.
+
+Free Parking
+Relax! Nothing happens.
+
+Just Visiting
+Don't worry. If you land here, just put your token in the Just Visiting section.
+
+Go To Jail
+Move your token to the In Jail space immediately! Do not collect M$200 for passing GO. Your turn is then over. You can still collect rent, auction, buy Houses and Hotels, mortgage, and trade while you are In Jail.
+
+How do I get out of Jail?
+You have 3 options:
+1- Pay M$50 at the start of your next turn, then roll and move as normal.
+2- Use a Get Out of Jail Free card at the start of your next turn if you have one (or buy one from another player). Put the card at the bottom of the pile, then roll and move.
+3- Roll a double on your next turn. If you do, you're free! Use the roll to move. You can use up to 3 turns to try for a double. If you don't throw a double by your third turn in Jail, pay M$50 and use your last roll to move.
+
+BUILDINGS
+
+Houses
+As soon as you get a color set, you can start buying Houses (you don't have to wait for your turn).
+Pay the Bank the cost price on the Title Deed card and place a House on the Street.
+Build evenly. You cannot build a second House on a Street until you've built one on each Street in the set. You can only have 4 Houses on a Street.
+
+Hotels
+Once you have 4 Houses on a Street, you can pay to upgrade to a Hotel.
+Pay the Hotel cost price on the Title Deed card, return all 4 Houses to the Bank, and put a Hotel on the Street.
+You can only have 1 Hotel per Street. You can't add any more Houses.
+You cannot build on a Street if any Street in its color set is mortgaged.
+
+Not enough buildings?
+If multiple players want the last House or Hotel, the Banker must auction it. Bids start at M$10.
+
+No buildings left?
+You can't buy any until someone sells theirs back.
+
+Auctions
+If you land on an unowned Street, Railroad, or Utility and you don't want to buy it, the Banker must auction it.
+   The Banker starts the auction by offering the space to everyone for A10.
+   Anyone can increase the bid by as little as A41 (even the Banker and the player who originally landed on the space).
+   The highest bidder wins the auction, pays the Bank, and takes the Title Deed card.
+
+What if no one wants it?
+That's fine. No one pays anything.
+
+Deals & Trades
+You can buy, sell or swap property with other players at any time.
+You must sell all buildings on a color set to the Bank before you can sell or trade a Street.
+You cannot sell (or trade) buildings to another player.
+Property can be traded for cash, other property, and/or Get Out of Jail Free cards. The amount is decided by the players making the deal.
+Mortgaged property can be traded at any agreed price.
+The new owner must immediately either:
+Repay the mortgage (pay the Bank the unmortgage cost).
+Or keep the mortgage (just pay the Bank 10% of the mortgage value now.
+
+HELP! I CAN'T PAY!
+
+1- Try to raise money
+If you owe money and can't pay, try to raise money by selling buildings and/or mortgaging properties.
+Selling Buildings
+Sell Hotels to the Bank for half the cost price and exchange them immediately for 4 Houses.
+Sell Houses to the Bank for half the cost price. Houses must be sold evenly across the color set.
+Mortgaging Property
+To mortgage a property, you must first sell all buildings in its color set to the Bank at half their cost price.
+To mortgage, turn the Title Deed card facedown and collect the mortgage value on the back from the Bank.
+To repay a mortgage, pay the unmortgage cost to the Bank (mortgage value +10%,) ,then turn the card face up.
+Rent cannot be collected on properties that are mortgaged. However, the increased rent level can be collected on the unmortgaged Streets in a color set.
+The increased rent on unmortgaged Railroads and Utilities may be collected in the same way.
+
+2- If you're still in debt, you are bankrupt and out of the game!
+Do you owe another player?
+Give them any Get Out of Jail Free cards and all your mortgaged properties.
+The new owner must immediately either:
+Repay the mortgage (pay the Bank the unmortgage cost).
+Or keep the mortgage (just pay the Bank
+10% of the mortgage value now.
+Do you owe the Bank?
+Return all your properties to the Bank.
+Any mortgages are canceled.
+All your properties must immediately be put up for auction.
+Return any Get Out of Jail Free cards to the bottom of the pile.
+The remaining players keep playing until there is only one person left in the game, the winner!
+
+ADVANCED!
+For a faster game, use the Speed Die and follow these steps...
+  Give each player an extraM$1000 to start.
+  Once you've passed GO for the first time, roll the Speed Die with the two white dice every turn.
+  If you roll:1, 2 or 3
+Add this to your roll of the two white dice and move.
+
+Bus
+Choose to move using just one of the white dice or count both. So, if you roll 1 and 5, you can move 1, 5 or 6 spaces.
+
+MR. MONOPOLY
+Use the white dice as normal. Then, at the end of your turn, go to the next unowned property space and buy it or put it up for auction. If all are owned, go to the next property (not yours) and pay rent.
+
+What else is different in advanced mode?
+The Speed Die doesn't count toward rolling doubles.
+If you roll 3-of-a-kind (each die shows the same number), you can move your token to any space on the board.
+If you are sent to Jail during your move, ignore the Speed Die. Your turn ends.
+Don't use the Speed Die when attempting to get out of Jail.
+Roll all 3 dice to determine the rent for a utility the Bus and MR. MONOPOLY don't count).
+
+TOP TIPS
+To keep your game short and sweet, don't use house rules!
+Always auction when someone doesn't want to buy the property they've landed on.
+Never loan money to other players, or make deals not to charge each other rent.
+Never put cash in the center of the board; you don't get a bonus for landing on Free Parking!

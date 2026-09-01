@@ -1,21 +1,109 @@
 """
-Capstone Backend — JWT Authentication  (STARTER)
+Capstone Backend — JWT Authentication
 ===================================================
-Implement password hashing, token creation/verification, and a FastAPI
-dependency for protected routes.
-
-Required:
-    - Password hashing (e.g. passlib / bcrypt)
-    - JWT creation on login (read secret/algorithm/expiry from env vars,
-      see .env.example)
-    - A dependency (e.g. get_current_user) that main.py can use to protect
-      routes
-
-TODO: implement register/login logic and the current-user dependency.
+Implements password hashing (bcrypt), JWT creation/verification,
+and dependencies for protecting FastAPI routes.
 """
 
-# TODO: import os, jwt/python-jose, passlib, etc.
-# TODO: def hash_password(password: str) -> str: ...
-# TODO: def verify_password(plain: str, hashed: str) -> bool: ...
-# TODO: def create_access_token(data: dict) -> str: ...
-# TODO: def get_current_user(token: str = Depends(...)) -> User: ...
+import os
+from datetime import datetime, timedelta, timezone
+from typing import Optional
+
+import bcrypt
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError, jwt
+from sqlalchemy.orm import Session
+
+try:
+    from database import get_db
+    import models
+    import schemas
+except ImportError:
+    from .database import get_db
+    from . import models, schemas
+
+# Environment variables & constants
+SECRET_KEY = os.getenv("JWT_SECRET_KEY", "tabletop_sage_dev_secret_key_12345")
+ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("JWT_EXPIRE_MINUTES", "60"))
+
+# OAuth2 token schemes
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
+oauth2_scheme_optional = OAuth2PasswordBearer(tokenUrl="/auth/token", auto_error=False)
+
+
+def hash_password(password: str) -> str:
+    """Hash a plaintext password with native bcrypt (safely capped at 72 bytes)."""
+    pwd_bytes = password.encode("utf-8")[:72]
+    salt = bcrypt.gensalt()
+    return bcrypt.hashpw(pwd_bytes, salt).decode("utf-8")
+
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Verify that a plaintext password matches the bcrypt hash."""
+    try:
+        pwd_bytes = plain_password.encode("utf-8")[:72]
+        hash_bytes = hashed_password.encode("utf-8")
+        return bcrypt.checkpw(pwd_bytes, hash_bytes)
+    except Exception:
+        return False
+
+
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
+    """Create a signed JWT access token containing user claims."""
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.now(timezone.utc) + expires_delta
+    else:
+        expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+
+def get_current_user(
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db),
+) -> models.User:
+    """
+    FastAPI dependency that extracts and validates the JWT token,
+    returning the authenticated User database record.
+    """
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+
+    user = db.query(models.User).filter(models.User.username == username).first()
+    if user is None:
+        raise credentials_exception
+    return user
+
+
+def get_current_user_optional(
+    token: Optional[str] = Depends(oauth2_scheme_optional),
+    db: Session = Depends(get_db),
+) -> Optional[models.User]:
+    """
+    Optional authentication dependency. Returns the User record if a valid
+    token is provided, or None for unauthenticated requests.
+    """
+    if not token:
+        return None
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if not username:
+            return None
+        return db.query(models.User).filter(models.User.username == username).first()
+    except JWTError:
+        return None
+

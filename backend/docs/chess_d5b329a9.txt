@@ -1,0 +1,20 @@
+Chess is a two-player strategy game played on a grid of 64 squares where the main goal is to trap your opponent's king in a checkmate.
+
+Setup and Basics
+The Board: Place the board so a light-colored square is in the bottom-right corner for each player.
+The Pieces: Each player gets 16 pieces: one king, one queen, two rooks, two bishops, two knights, and eight pawns.
+Starting Position: Rooks go in the corners, then knights, then bishops. The queen goes on her matching color (white queen on white, black queen on black), and the king takes the final remaining square next to her. Pawns fill the entire row directly in front of the other pieces.
+Turns: White always moves first. Players take turns moving one piece at a time.
+
+How the Pieces Move
+King: Moves one square in any direction. It cannot move into a threatened square (check).
+Queen: Combines the power of the rook and bishop. It moves any number of empty squares in any straight or diagonal direction.
+Rook: Moves any number of empty squares horizontally or vertically.
+Bishop: Moves any number of empty squares diagonally. Each player has one light-square bishop and one dark-square bishop.
+Knight: Moves in an "L" shape: two squares in one straight direction, then one square turns at a 90-degree angle. It is the only piece that can jump over other pieces.
+Pawn: Moves forward one square, but can move two squares on its very first move. Pawns capture enemy pieces one square diagonally forward, which is different from how they walk normally.
+
+Capturing and Winning
+Capturing: Land your piece on an enemy piece's square to remove it from the board.
+Check: When a king is directly attacked by an enemy piece, it is in "check" and must escape, block, or capture the attacker on the next turn.
+Checkmate: When a king is in check and has no legal way to escape, it is checkmate, and the attacking player wins.

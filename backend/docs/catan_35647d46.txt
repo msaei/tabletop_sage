@@ -1,0 +1,19 @@
+The goal of Catan is to be the first player to reach 10 victory points by building settlements, cities, and roads.
+
+Game Setup
+The Board: Assemble the frame, place the 19 terrain hexes inside, and put the number tokens on them. Place the robber on the desert hex.
+Pieces: Each player takes 5 settlements, 4 cities, 15 roads, and a building cost card.
+Starting Placement: Players take turns placing one settlement and one road, then go in reverse order to place a second settlement and road. You get resource cards matching the hexes touching your second settlement.
+
+How to Play Your Turn
+On each turn, follow these three steps in order:
+1. Resource Production: Roll the two dice. Any hex with that number produces resources for players who have settlements (1 resource) or cities (2 resources) touching that hex.
+If you roll a 7, the robber moves. Players with more than 7 cards discard half. The active player moves the robber to any hex and steals one random card from an adjacent player.
+2. Trading: Trade resources with other players or use maritime trade (4 of identical resources to the bank, or 2:1 / 3:1 if you own a port).
+3. Building: Spend resources to build roads, settlements, and cities, or buy development cards.
+
+Building Costs
+Road: 1 wood, 1 brick
+Settlement: 1 wood, 1 brick, 1 sheep (wool), 1 wheat (grain) (Worth 1 point)
+City: 3 ore, 2 wheat (Upgrade a settlement; worth 2 points)
+Development Card: 1 ore, 1 sheep, 1 wheat (Provides knights, progress, or hidden victory points)

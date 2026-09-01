@@ -1,0 +1,24 @@
+The objective of backgammon is to move all 15 of your checkers around the board into your home board and then remove them before your opponent does.
+
+Setup and Board
+The board has 24 long triangles called points (or pips), divided into four quadrants.
+Each player gets 15 checkers of one color.
+Checkers start in a fixed layout: 2 on the 24-point, 5 on the 13-point, 3 on the 8-point, and 5 on the 6-point.
+Players move their checkers in opposing, horseshoe-shaped directions toward their own home board.
+
+Movement and Dice
+Both players roll one die to start; the higher number goes first and uses both dice numbers for that first turn.
+After the start, players roll two dice and take turns moving checkers forward by the numbers shown.
+Numbers on two dice are separate moves; you can move one checker twice or two different checkers once.
+Rolling doubles lets you play that number four separate times.
+You can only land on an open point—a point with no opposing checkers, your own checkers, or only a single opposing checker (called a blot). 
+Two or more opposing checkers block the point.
+
+Hitting and the Bar
+Landing on a single opposing checker (a blot) "hits" it, sending it to the middle dividing strip called the bar.
+If you have a checker on the bar, your priority is re-entering it into the opponent's home board before making any other moves.
+
+Bearing Off and Winning
+When all 15 of your checkers are inside your home board, you can start bearing off (removing them from the board using matching dice rolls).
+The first player to bear off all 15 checkers wins.
+Wins can be worth more points: a single win, a gammon (if the loser removed no checkers), or a backgammon (if the loser removed no checkers and still has a piece on the bar or winner's home board).
