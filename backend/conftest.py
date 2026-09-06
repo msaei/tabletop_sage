@@ -1,8 +1,9 @@
 import os
-import sys
 import shutil
+import sys
 import tempfile
 from pathlib import Path
+
 import pytest
 
 # Ensure backend root directory is on Python path during test execution
@@ -21,8 +22,8 @@ os.environ["CHROMA_PATH"] = str(TEST_CHROMA_PATH)
 os.environ["DATABASE_URL"] = f"sqlite:///{TEST_DB_PATH}"
 
 
-from database import engine, Base
-import models  # noqa: F401 - ensure models are registered with Base metadata
+import models  # noqa: F401, E402
+from database import Base, engine  # noqa: E402
 
 
 @pytest.fixture(scope="session", autouse=True)

@@ -5,6 +5,7 @@ Tests user registration, login, and protected route token verification.
 """
 
 import uuid
+
 from fastapi.testclient import TestClient
 from main import app
 

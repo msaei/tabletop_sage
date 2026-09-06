@@ -6,9 +6,8 @@ Compatible with both Pydantic v1 and v2 (orm_mode / from_attributes).
 """
 
 from datetime import datetime
-from typing import List, Optional
-from pydantic import BaseModel, Field, ConfigDict
 
+from pydantic import BaseModel, ConfigDict, Field
 
 # ─── Auth Schemas ─────────────────────────────────────────────────────────────
 
@@ -18,7 +17,7 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str = Field(..., min_length=4, description="Raw password string")
-    role: Optional[str] = Field(default="player", description="'player' or 'admin'")
+    role: str | None = Field(default="player", description="'player' or 'admin'")
 
 
 class UserResponse(UserBase):
@@ -35,15 +34,15 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    username: Optional[str] = None
-    role: Optional[str] = None
+    username: str | None = None
+    role: str | None = None
 
 
 # ─── Board Game Schemas ───────────────────────────────────────────────────────
 
 class BoardGameBase(BaseModel):
     name: str = Field(..., min_length=1, max_length=100, description="Board game title")
-    description: Optional[str] = Field(default=None, description="Brief summary or description")
+    description: str | None = Field(default=None, description="Brief summary or description")
 
 
 class BoardGameCreate(BoardGameBase):
@@ -56,7 +55,7 @@ class BoardGameResponse(BoardGameBase):
     uploaded_by_user_id: int
     status: str
     uploaded_at: datetime
-    is_in_library: Optional[bool] = None
+    is_in_library: bool | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -82,7 +81,7 @@ class UserLibraryResponse(BaseModel):
     user_id: int
     game_id: int
     added_at: datetime
-    game: Optional[BoardGameResponse] = None
+    game: BoardGameResponse | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -90,34 +89,34 @@ class UserLibraryResponse(BaseModel):
 # ─── RAG & Chat Schemas ───────────────────────────────────────────────────────
 
 class Citation(BaseModel):
-    chunk_id: Optional[str] = None
-    section: Optional[str] = None
+    chunk_id: str | None = None
+    section: str | None = None
     text: str
-    score: Optional[float] = None
+    score: float | None = None
 
 
 class QueryRequest(BaseModel):
     question: str = Field(..., min_length=2, description="Rules dispute or gameplay question")
-    session_id: Optional[str] = Field(default="default-session", description="Client session ID")
+    session_id: str | None = Field(default="default-session", description="Client session ID")
 
 
 class QueryResponse(BaseModel):
     answer: str
     game_id: int
     game_name: str
-    citations: List[Citation] = []
-    confidence: Optional[float] = None
-    session_id: Optional[str] = None
+    citations: list[Citation] = []
+    confidence: float | None = None
+    session_id: str | None = None
 
 
 class ChatLogResponse(BaseModel):
     id: int
-    user_id: Optional[int] = None
+    user_id: int | None = None
     game_id: int
     session_id: str
     question: str
     answer: str
-    citations_json: Optional[str] = None
+    citations_json: str | None = None
     timestamp: datetime
 
     model_config = ConfigDict(from_attributes=True)

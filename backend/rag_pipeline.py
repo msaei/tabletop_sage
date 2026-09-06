@@ -6,11 +6,11 @@ grounded prompt construction, and Ollama LLM generation with confidence
 guardrails and source citations.
 """
 
+import logging
 import os
 import re
-import logging
 from pathlib import Path
-from typing import List, Dict, Any, Tuple, Optional
+from typing import Any
 
 import chromadb
 import requests
@@ -56,7 +56,7 @@ def chunk_document(
     text: str,
     chunk_size: int = 500,
     chunk_overlap: int = 100,
-) -> List[Tuple[str, str]]:
+) -> list[tuple[str, str]]:
     """
     Split rulebook text into structured (section_name, chunk_text) pairs.
     Splits by markdown headings (#, ##) or logical section breaks, then
@@ -67,9 +67,9 @@ def chunk_document(
 
     # Identify heading markers or paragraphs
     lines = text.splitlines()
-    sections: List[Tuple[str, List[str]]] = []
+    sections: list[tuple[str, list[str]]] = []
     current_section = "General Rules"
-    current_lines: List[str] = []
+    current_lines: list[str] = []
 
     heading_regex = re.compile(r"^(?:#{1,4}\s+|\b[A-Z0-9\s]{3,30}:?$|How to|Setup|Rules|Turn|Score|End of|Building|Trading)")
 
@@ -89,7 +89,7 @@ def chunk_document(
         sections.append((current_section, current_lines))
 
     # Sub-chunk sections into character windows
-    chunks: List[Tuple[str, str]] = []
+    chunks: list[tuple[str, str]] = []
     for sec_title, sec_lines in sections:
         combined_text = "\n".join(sec_lines)
         if len(combined_text) <= chunk_size:
@@ -180,7 +180,7 @@ def retrieve_context(
     question: str,
     game_id: int,
     n_results: int = 3,
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """
     Perform a vector similarity search strictly scoped to the specified game_id.
     Returns a list of citation dictionaries with text, section, and similarity score.
@@ -198,7 +198,7 @@ def retrieve_context(
         logger.error(f"ChromaDB query failed for game_id={game_id}: {exc}")
         return []
 
-    citations: List[Dict[str, Any]] = []
+    citations: list[dict[str, Any]] = []
     if not results or not results["documents"] or not results["documents"][0]:
         return citations
 
@@ -222,7 +222,7 @@ def retrieve_context(
 
 # ─── Grounded Answer Generation (LLM) ────────────────────────────────────────
 
-def build_system_prompt(game_name: str, citations: List[Dict[str, Any]]) -> str:
+def build_system_prompt(game_name: str, citations: list[dict[str, Any]]) -> str:
     """Construct a clear, grounded system prompt containing rulebook citations."""
     context_blocks = []
     for i, c in enumerate(citations, 1):
@@ -245,7 +245,7 @@ def build_system_prompt(game_name: str, citations: List[Dict[str, Any]]) -> str:
 def generate_answer(
     question: str,
     game_name: str,
-    citations: List[Dict[str, Any]],
+    citations: list[dict[str, Any]],
 ) -> str:
     """
     Call Ollama LLM to generate a grounded answer from retrieved context.
@@ -308,7 +308,7 @@ def query_rag_pipeline(
     game_id: int,
     game_name: str,
     n_results: int = 3,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Full RAG execution:
     1. Scoped vector retrieval in ChromaDB (where game_id == game_id)
@@ -344,7 +344,7 @@ def query_rag_pipeline(
 
 # ─── Health & Diagnostics ─────────────────────────────────────────────────────
 
-def check_rag_health() -> Dict[str, str]:
+def check_rag_health() -> dict[str, str]:
     """Check connectivity to ChromaDB vector store and Ollama model server."""
     # Check ChromaDB
     try:
@@ -352,7 +352,7 @@ def check_rag_health() -> Dict[str, str]:
         count = col.count()
         chroma_status = f"healthy ({count} indexed chunks)"
     except Exception as exc:
-        chroma_status = f"unhealthy: {str(exc)}"
+        chroma_status = f"unhealthy: {exc!s}"
 
     # Check Ollama
     try:
@@ -365,7 +365,7 @@ def check_rag_health() -> Dict[str, str]:
         else:
             ollama_status = f"unhealthy (status {resp.status_code})"
     except Exception as exc:
-        ollama_status = f"unreachable ({str(exc)})"
+        ollama_status = f"unreachable ({exc!s})"
 
     return {
         "vector_store": chroma_status,

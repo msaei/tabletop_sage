@@ -17,19 +17,18 @@ import json
 import logging
 import os
 import shutil
-from pathlib import Path
-from typing import List, Optional
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import (
-    FastAPI,
     Depends,
-    HTTPException,
-    status,
-    UploadFile,
+    FastAPI,
     File,
     Form,
+    HTTPException,
     Query,
+    UploadFile,
+    status,
 )
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
@@ -39,37 +38,35 @@ from sqlalchemy.orm import Session
 logger = logging.getLogger(__name__)
 
 try:
-    from database import engine, Base, get_db, SessionLocal
     import models
     import schemas
     from auth import (
-        hash_password,
-        verify_password,
         create_access_token,
         get_current_user,
         get_current_user_optional,
+        hash_password,
+        verify_password,
     )
+    from database import Base, SessionLocal, engine, get_db
     from rag_pipeline import (
+        check_rag_health,
         ingest_rulebook,
         query_rag_pipeline,
-        check_rag_health,
-        delete_game_from_index,
     )
 except ImportError:
-    from .database import engine, Base, get_db, SessionLocal
     from . import models, schemas
     from .auth import (
-        hash_password,
-        verify_password,
         create_access_token,
         get_current_user,
         get_current_user_optional,
+        hash_password,
+        verify_password,
     )
+    from .database import Base, SessionLocal, engine, get_db
     from .rag_pipeline import (
+        check_rag_health,
         ingest_rulebook,
         query_rag_pipeline,
-        check_rag_health,
-        delete_game_from_index,
     )
 
 # Configuration & Document Storage Directory
@@ -189,16 +186,16 @@ def get_my_profile(
 
 @app.get(
     "/games",
-    response_model=List[schemas.BoardGameResponse],
+    response_model=list[schemas.BoardGameResponse],
     tags=["Games Bank"],
     summary="Search and browse board games in the shared bank",
 )
 def list_games(
-    q: Optional[str] = Query(None, description="Search term for game title or description"),
+    q: str | None = Query(None, description="Search term for game title or description"),
     skip: int = Query(0, ge=0, description="Offset pagination"),
     limit: int = Query(50, ge=1, le=100, description="Limit pagination"),
     db: Session = Depends(get_db),
-    current_user: Optional[models.User] = Depends(get_current_user_optional),
+    current_user: models.User | None = Depends(get_current_user_optional),
 ):
     query = db.query(models.BoardGame).filter(models.BoardGame.status == "active")
     if q:
@@ -241,7 +238,7 @@ def list_games(
 )
 async def upload_game(
     name: str = Form(..., min_length=1, max_length=100),
-    description: Optional[str] = Form(None),
+    description: str | None = Form(None),
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
@@ -277,7 +274,7 @@ async def upload_game(
     except Exception as exc:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to save rulebook file: {str(exc)}",
+            detail=f"Failed to save rulebook file: {exc!s}",
         )
 
     # Create BoardGame record
@@ -322,7 +319,7 @@ async def upload_game(
 def get_game(
     game_id: int,
     db: Session = Depends(get_db),
-    current_user: Optional[models.User] = Depends(get_current_user_optional),
+    current_user: models.User | None = Depends(get_current_user_optional),
 ):
     game = db.query(models.BoardGame).filter(models.BoardGame.id == game_id).first()
     if not game or game.status != "active":
@@ -375,7 +372,7 @@ def get_game_rulebook(
     except Exception as exc:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Could not read rulebook file: {str(exc)}",
+            detail=f"Could not read rulebook file: {exc!s}",
         )
 
     return {
@@ -390,7 +387,7 @@ def get_game_rulebook(
 
 @app.get(
     "/library",
-    response_model=List[schemas.BoardGameResponse],
+    response_model=list[schemas.BoardGameResponse],
     tags=["User Library"],
     summary="List all board games in the authenticated user's library",
 )
@@ -511,7 +508,7 @@ def ask_game_rulebook(
     game_id: int,
     query_in: schemas.QueryRequest,
     db: Session = Depends(get_db),
-    current_user: Optional[models.User] = Depends(get_current_user_optional),
+    current_user: models.User | None = Depends(get_current_user_optional),
 ):
     game = db.query(models.BoardGame).filter(models.BoardGame.id == game_id).first()
     if not game or game.status != "active":
@@ -569,7 +566,7 @@ def health_check(
         db.execute(text("SELECT 1"))
         db_status = "healthy"
     except Exception as exc:
-        db_status = f"unhealthy: {str(exc)}"
+        db_status = f"unhealthy: {exc!s}"
 
     # Check Vector Store and LLM connectivity
     rag_health = check_rag_health()

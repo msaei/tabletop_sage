@@ -6,9 +6,10 @@ Tests the scoped RAG pipeline, document chunking, and Q&A endpoint.
 
 import io
 import uuid
+
 from fastapi.testclient import TestClient
 from main import app
-from rag_pipeline import chunk_document, retrieve_context
+from rag_pipeline import chunk_document
 
 client = TestClient(app)
 

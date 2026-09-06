@@ -9,8 +9,9 @@ Interactive web interface for Tabletop Sage:
 """
 
 import uuid
-import streamlit as st
+
 import api_client
+import streamlit as st
 
 # ─── Page Configuration & Custom Styling ──────────────────────────────────────
 

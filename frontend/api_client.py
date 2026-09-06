@@ -6,13 +6,14 @@ rulebooks, RAG questions, and system health).
 """
 
 import os
-from typing import Optional, Tuple, Dict, Any, List
+from typing import Any
+
 import requests
 
 BACKEND_URL = os.environ.get("BACKEND_URL", "http://localhost:8000").rstrip("/")
 
 
-def _get_headers(token: Optional[str] = None) -> Dict[str, str]:
+def _get_headers(token: str | None = None) -> dict[str, str]:
     """Helper to generate request headers with optional JWT Bearer token."""
     headers = {}
     if token:
@@ -22,7 +23,7 @@ def _get_headers(token: Optional[str] = None) -> Dict[str, str]:
 
 # ─── Authentication API ───────────────────────────────────────────────────────
 
-def register(username: str, password: str, role: str = "player") -> Tuple[bool, Any]:
+def register(username: str, password: str, role: str = "player") -> tuple[bool, Any]:
     """Register a new user account."""
     url = f"{BACKEND_URL}/auth/register"
     try:
@@ -36,10 +37,10 @@ def register(username: str, password: str, role: str = "player") -> Tuple[bool, 
         error_msg = resp.json().get("detail", "Registration failed")
         return False, error_msg
     except requests.exceptions.RequestException as exc:
-        return False, f"Server connection error: {str(exc)}"
+        return False, f"Server connection error: {exc!s}"
 
 
-def login(username: str, password: str) -> Tuple[bool, Any]:
+def login(username: str, password: str) -> tuple[bool, Any]:
     """Authenticate credentials and retrieve a JWT access token."""
     url = f"{BACKEND_URL}/auth/token"
     try:
@@ -53,10 +54,10 @@ def login(username: str, password: str) -> Tuple[bool, Any]:
         error_msg = resp.json().get("detail", "Invalid username or password")
         return False, error_msg
     except requests.exceptions.RequestException as exc:
-        return False, f"Server connection error: {str(exc)}"
+        return False, f"Server connection error: {exc!s}"
 
 
-def get_current_user(token: str) -> Tuple[bool, Any]:
+def get_current_user(token: str) -> tuple[bool, Any]:
     """Fetch current user profile using JWT token."""
     url = f"{BACKEND_URL}/auth/me"
     try:
@@ -65,12 +66,12 @@ def get_current_user(token: str) -> Tuple[bool, Any]:
             return True, resp.json()
         return False, resp.json().get("detail", "Failed to fetch user")
     except requests.exceptions.RequestException as exc:
-        return False, f"Server connection error: {str(exc)}"
+        return False, f"Server connection error: {exc!s}"
 
 
 # ─── Game Bank API ────────────────────────────────────────────────────────────
 
-def get_games(q: Optional[str] = None, token: Optional[str] = None) -> Tuple[bool, Any]:
+def get_games(q: str | None = None, token: str | None = None) -> tuple[bool, Any]:
     """Search and browse board games in the shared bank."""
     url = f"{BACKEND_URL}/games"
     params = {}
@@ -82,10 +83,10 @@ def get_games(q: Optional[str] = None, token: Optional[str] = None) -> Tuple[boo
             return True, resp.json()
         return False, resp.json().get("detail", "Failed to load games")
     except requests.exceptions.RequestException as exc:
-        return False, f"Server connection error: {str(exc)}"
+        return False, f"Server connection error: {exc!s}"
 
 
-def get_game(game_id: int, token: Optional[str] = None) -> Tuple[bool, Any]:
+def get_game(game_id: int, token: str | None = None) -> tuple[bool, Any]:
     """Retrieve details for a single game."""
     url = f"{BACKEND_URL}/games/{game_id}"
     try:
@@ -94,16 +95,16 @@ def get_game(game_id: int, token: Optional[str] = None) -> Tuple[bool, Any]:
             return True, resp.json()
         return False, resp.json().get("detail", "Game not found")
     except requests.exceptions.RequestException as exc:
-        return False, f"Server connection error: {str(exc)}"
+        return False, f"Server connection error: {exc!s}"
 
 
 def upload_game(
     name: str,
-    description: Optional[str],
+    description: str | None,
     file_bytes: bytes,
     filename: str,
     token: str,
-) -> Tuple[bool, Any]:
+) -> tuple[bool, Any]:
     """Upload a new board game and its rulebook file to the bank."""
     url = f"{BACKEND_URL}/games"
     data = {"name": name}
@@ -122,10 +123,10 @@ def upload_game(
             return True, resp.json()
         return False, resp.json().get("detail", "Failed to upload game")
     except requests.exceptions.RequestException as exc:
-        return False, f"Server connection error: {str(exc)}"
+        return False, f"Server connection error: {exc!s}"
 
 
-def get_rulebook(game_id: int) -> Tuple[bool, Any]:
+def get_rulebook(game_id: int) -> tuple[bool, Any]:
     """Retrieve raw/markdown rulebook text for reading."""
     url = f"{BACKEND_URL}/games/{game_id}/rulebook"
     try:
@@ -134,12 +135,12 @@ def get_rulebook(game_id: int) -> Tuple[bool, Any]:
             return True, resp.json()
         return False, resp.json().get("detail", "Failed to retrieve rulebook")
     except requests.exceptions.RequestException as exc:
-        return False, f"Server connection error: {str(exc)}"
+        return False, f"Server connection error: {exc!s}"
 
 
 # ─── Personal Library API ─────────────────────────────────────────────────────
 
-def get_library(token: str) -> Tuple[bool, Any]:
+def get_library(token: str) -> tuple[bool, Any]:
     """Fetch the authenticated user's saved games library."""
     url = f"{BACKEND_URL}/library"
     try:
@@ -148,10 +149,10 @@ def get_library(token: str) -> Tuple[bool, Any]:
             return True, resp.json()
         return False, resp.json().get("detail", "Failed to fetch library")
     except requests.exceptions.RequestException as exc:
-        return False, f"Server connection error: {str(exc)}"
+        return False, f"Server connection error: {exc!s}"
 
 
-def add_to_library(game_id: int, token: str) -> Tuple[bool, Any]:
+def add_to_library(game_id: int, token: str) -> tuple[bool, Any]:
     """Add a game from the bank to user's favorites/library."""
     url = f"{BACKEND_URL}/library/{game_id}"
     try:
@@ -160,10 +161,10 @@ def add_to_library(game_id: int, token: str) -> Tuple[bool, Any]:
             return True, resp.json()
         return False, resp.json().get("detail", "Failed to add game to library")
     except requests.exceptions.RequestException as exc:
-        return False, f"Server connection error: {str(exc)}"
+        return False, f"Server connection error: {exc!s}"
 
 
-def remove_from_library(game_id: int, token: str) -> Tuple[bool, Any]:
+def remove_from_library(game_id: int, token: str) -> tuple[bool, Any]:
     """Remove a game from user's library."""
     url = f"{BACKEND_URL}/library/{game_id}"
     try:
@@ -172,7 +173,7 @@ def remove_from_library(game_id: int, token: str) -> Tuple[bool, Any]:
             return True, resp.json()
         return False, resp.json().get("detail", "Failed to remove game from library")
     except requests.exceptions.RequestException as exc:
-        return False, f"Server connection error: {str(exc)}"
+        return False, f"Server connection error: {exc!s}"
 
 
 # ─── RAG Rules Assistant API ──────────────────────────────────────────────────
@@ -181,8 +182,8 @@ def ask_rules_question(
     game_id: int,
     question: str,
     session_id: str = "default-session",
-    token: Optional[str] = None,
-) -> Tuple[bool, Any]:
+    token: str | None = None,
+) -> tuple[bool, Any]:
     """Ask a rules dispute question scoped to game_id."""
     url = f"{BACKEND_URL}/games/{game_id}/ask"
     payload = {"question": question, "session_id": session_id}
@@ -197,12 +198,12 @@ def ask_rules_question(
             return True, resp.json()
         return False, resp.json().get("detail", "Failed to get rules answer")
     except requests.exceptions.RequestException as exc:
-        return False, f"Server connection error: {str(exc)}"
+        return False, f"Server connection error: {exc!s}"
 
 
 # ─── System Health API ────────────────────────────────────────────────────────
 
-def get_health() -> Dict[str, Any]:
+def get_health() -> dict[str, Any]:
     """Retrieve backend database, vector store, and LLM health status."""
     url = f"{BACKEND_URL}/health"
     try:

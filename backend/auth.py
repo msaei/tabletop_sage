@@ -7,7 +7,6 @@ and dependencies for protecting FastAPI routes.
 
 import os
 from datetime import datetime, timedelta, timezone
-from typing import Optional
 
 import bcrypt
 from fastapi import Depends, HTTPException, status
@@ -16,12 +15,11 @@ from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
 try:
-    from database import get_db
     import models
-    import schemas
+    from database import get_db
 except ImportError:
+    from . import models
     from .database import get_db
-    from . import models, schemas
 
 # Environment variables & constants
 SECRET_KEY = os.getenv("JWT_SECRET_KEY", "tabletop_sage_dev_secret_key_12345")
@@ -50,7 +48,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
         return False
 
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
+def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:
     """Create a signed JWT access token containing user claims."""
     to_encode = data.copy()
     if expires_delta:
@@ -89,9 +87,9 @@ def get_current_user(
 
 
 def get_current_user_optional(
-    token: Optional[str] = Depends(oauth2_scheme_optional),
+    token: str | None = Depends(oauth2_scheme_optional),
     db: Session = Depends(get_db),
-) -> Optional[models.User]:
+) -> models.User | None:
     """
     Optional authentication dependency. Returns the User record if a valid
     token is provided, or None for unauthenticated requests.

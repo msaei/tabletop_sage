@@ -9,13 +9,14 @@ Database models for Tabletop Sage:
 """
 
 from datetime import datetime, timezone
+
 from sqlalchemy import (
     Column,
+    DateTime,
+    ForeignKey,
     Integer,
     String,
     Text,
-    DateTime,
-    ForeignKey,
     UniqueConstraint,
 )
 from sqlalchemy.orm import relationship
