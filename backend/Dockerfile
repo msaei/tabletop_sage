@@ -1,26 +1,31 @@
-# backend/Dockerfile  (STARTER)
-# ================================
-# TODO: Complete this Dockerfile so the backend can run inside Docker.
-# Refer to Module 8's Dockerfile Creation lesson for guidance.
-#
-# Steps to implement:
-#   1. Choose a base image — python:3.11-slim is a good choice
-#   2. Set a working directory (e.g. /app)
-#   3. Copy requirements.txt and install dependencies with pip
-#   4. Copy the rest of the source code
-#   5. Expose the port uvicorn will listen on (8000)
-#   6. Set the CMD to start uvicorn
-#      Hint: uvicorn main:app --host 0.0.0.0 --port 8000
+# Base Python image
+FROM python:3.11-slim
 
-# TODO: FROM ...
+# Prevent Python from writing .pyc files and buffering stdout/stderr
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
 
-# TODO: WORKDIR ...
+# Set container working directory
+WORKDIR /app
 
-# TODO: COPY requirements.txt .
-# TODO: RUN pip install ...
+# Install system tools and build dependencies for native libraries
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
-# TODO: COPY . .
+# Copy and install python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# TODO: EXPOSE ...
+# Copy backend source code
+COPY . .
 
-# TODO: CMD [...]
+# Ensure storage directories exist
+RUN mkdir -p /app/docs /app/rag_db
+
+# Expose default FastAPI / Uvicorn port
+EXPOSE 8000
+
+# Start FastAPI application
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -1,58 +1,67 @@
-# docker-compose.yml  (STARTER)
+# docker-compose.yml
 # =================================
-# Defines the services your capstone needs. At minimum: backend + frontend.
-# Add chromadb and/or ollama as their own services if you don't want to
-# embed them in the backend container. Run everything with:
+# Orchestrates Tabletop Sage multi-container stack:
+# - backend: FastAPI API, SQLAlchemy SQLite, ChromaDB vector store
+# - frontend: Streamlit UI
+# - ollama: Local LLM inference engine
 #
+# Usage:
 #   docker-compose up --build
-#
-# TODO: Complete each service definition below.
-# Refer to Module 8 (Docker Compose lessons) for guidance.
+#   docker-compose down
 
 services:
 
-  # ── Backend — FastAPI + SQLAlchemy + JWT auth + RAG pipeline ─────────────
+  # ── Backend Service (FastAPI + ChromaDB + SQLAlchemy) ───────────────────────
   backend:
-    # TODO: build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: tabletop-backend
     ports:
       - "8000:8000"
-    # TODO: env_file:
-    #   - .env
-    # TODO: Add named volumes so your database and ChromaDB data survive restarts
-    #   volumes:
-    #     - db_data:/app/data
-    #     - chroma_data:/app/rag_db
-    # TODO: depends_on: [ollama] and/or [chromadb] if you split them out as services
+    env_file:
+      - .env
+    volumes:
+      - backend_data:/app/data
+      - backend_docs:/app/docs
+      - backend_chroma:/app/rag_db
+    depends_on:
+      - ollama
+    restart: unless-stopped
 
-  # ── Frontend — Streamlit UI ───────────────────────────────────────────────
+  # ── Frontend Service (Streamlit Web UI) ─────────────────────────────────────
   frontend:
-    # TODO: build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: tabletop-frontend
     ports:
       - "8501:8501"
-    # TODO: Set BACKEND_URL so the frontend reaches the backend by service name
-    #   environment:
-    #     - BACKEND_URL=http://backend:8000
-    # TODO: depends_on: [backend]
+    env_file:
+      - .env
+    depends_on:
+      - backend
+    restart: unless-stopped
 
-  # ── Optional: ChromaDB as its own service (instead of embedding it) ──────
-  # chromadb:
-  #   image: chromadb/chroma:latest
-  #   ports:
-  #     - "8001:8000"
-  #   volumes:
-  #     - chroma_data:/chroma/chroma
+  # ── Ollama LLM Service (Local Inference Engine) ─────────────────────────────
+  ollama:
+    image: ollama/ollama:latest
+    container_name: tabletop-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
 
-  # ── Optional: Ollama as its own service (instead of running on the host) ─
-  # ollama:
-  #   image: ollama/ollama:latest
-  #   ports:
-  #     - "11434:11434"
-  #   volumes:
-  #     - ollama_data:/root/.ollama
+# ── Named Persistent Volumes ──────────────────────────────────────────────────
+volumes:
+  backend_data:
+    name: tabletop_backend_data
+  backend_docs:
+    name: tabletop_backend_docs
+  backend_chroma:
+    name: tabletop_backend_chroma
+  ollama_data:
+    name: tabletop_ollama_data
 
-# ── Named volumes ─────────────────────────────────────────────────────────
-# TODO: Declare the named volumes you referenced above
-# volumes:
-#   db_data:
-#   chroma_data:
-#   ollama_data:
+
