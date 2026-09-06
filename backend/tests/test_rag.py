@@ -71,3 +71,21 @@ def test_rag_ask_returns_citations():
         for c in data["citations"]
     )
 
+
+def test_rag_ask_invalid_payload_returns_422():
+    # Sending missing required 'question' field
+    resp = client.post(
+        "/games/1/ask",
+        json={"session_id": "test-session"},
+    )
+    assert resp.status_code == 422
+
+
+def test_rag_ask_nonexistent_game_returns_404():
+    resp = client.post(
+        "/games/999999/ask",
+        json={"question": "What is the setup rule?"},
+    )
+    assert resp.status_code == 404
+
+

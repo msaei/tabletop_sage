@@ -83,3 +83,24 @@ def test_user_library_add_and_remove():
     lib_after = client.get("/library", headers={"Authorization": f"Bearer {token}"})
     assert game_id not in [g["id"] for g in lib_after.json()]
 
+
+def test_health_endpoint_returns_200():
+    resp = client.get("/health")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "status" in data
+    assert "database" in data
+    assert "version" in data
+
+
+def test_upload_game_missing_file_returns_422():
+    token = _get_auth_token()
+    # Attempt upload with missing required file field
+    resp = client.post(
+        "/games",
+        data={"name": "No File Game"},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert resp.status_code == 422
+
+

@@ -78,3 +78,13 @@ def test_protected_route_requires_auth():
     assert resp_auth.status_code == 200
     assert resp_auth.json()["username"] == unique_user
 
+
+def test_register_invalid_payload_returns_422():
+    # Sending missing password or invalid schema types
+    resp = client.post(
+        "/auth/register",
+        json={"username": "only_username_no_password"},
+    )
+    assert resp.status_code == 422
+
+
