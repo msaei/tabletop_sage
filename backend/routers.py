@@ -178,12 +178,12 @@ def list_games(
     if players is not None:
         query = query.filter(
             or_(
-                models.BoardGame.min_players == None,
+                models.BoardGame.min_players.is_(None),
                 models.BoardGame.min_players <= players,
             )
         ).filter(
             or_(
-                models.BoardGame.max_players == None,
+                models.BoardGame.max_players.is_(None),
                 models.BoardGame.max_players >= players,
             )
         )
@@ -191,7 +191,7 @@ def list_games(
     if min_players is not None:
         query = query.filter(
             or_(
-                models.BoardGame.min_players == None,
+                models.BoardGame.min_players.is_(None),
                 models.BoardGame.min_players >= min_players,
             )
         )
@@ -199,7 +199,7 @@ def list_games(
     if max_players is not None:
         query = query.filter(
             or_(
-                models.BoardGame.max_players == None,
+                models.BoardGame.max_players.is_(None),
                 models.BoardGame.max_players <= max_players,
             )
         )
@@ -207,7 +207,7 @@ def list_games(
     if min_age is not None:
         query = query.filter(
             or_(
-                models.BoardGame.min_age == None,
+                models.BoardGame.min_age.is_(None),
                 models.BoardGame.min_age <= min_age,
             )
         )
@@ -215,7 +215,7 @@ def list_games(
     if max_playtime is not None:
         query = query.filter(
             or_(
-                models.BoardGame.estimated_playtime == None,
+                models.BoardGame.estimated_playtime.is_(None),
                 models.BoardGame.estimated_playtime <= max_playtime,
             )
         )

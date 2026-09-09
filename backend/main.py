@@ -15,6 +15,7 @@ from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
 
 logger = logging.getLogger(__name__)
 
@@ -33,8 +34,6 @@ except ImportError:
 DOCS_STORAGE_PATH = Path(os.getenv("DOCS_STORAGE_PATH", "./docs"))
 DOCS_STORAGE_PATH.mkdir(parents=True, exist_ok=True)
 
-
-from sqlalchemy import text
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
