@@ -64,7 +64,8 @@ except ImportError:
     )
 
 # Configuration & Document Storage Directory
-DOCS_STORAGE_PATH = Path(os.getenv("DOCS_STORAGE_PATH", "./docs"))
+BASE_DIR = Path(__file__).resolve().parent
+DOCS_STORAGE_PATH = Path(os.getenv("DOCS_STORAGE_PATH", str(BASE_DIR / "docs")))
 DOCS_STORAGE_PATH.mkdir(parents=True, exist_ok=True)
 
 # ── Router Definitions ────────────────────────────────────────────────────────

@@ -24,20 +24,23 @@ try:
     from database import Base, SessionLocal, engine
     from rag_pipeline import ingest_rulebook
     from routers import all_routers
+    from seed_data import seed_all_games
 except ImportError:
     from . import models
     from .database import Base, SessionLocal, engine
     from .rag_pipeline import ingest_rulebook
     from .routers import all_routers
+    from .seed_data import seed_all_games
 
 # Configuration & Document Storage Directory
-DOCS_STORAGE_PATH = Path(os.getenv("DOCS_STORAGE_PATH", "./docs"))
+BASE_DIR = Path(__file__).resolve().parent
+DOCS_STORAGE_PATH = Path(os.getenv("DOCS_STORAGE_PATH", str(BASE_DIR / "docs")))
 DOCS_STORAGE_PATH.mkdir(parents=True, exist_ok=True)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Initialize database tables, storage dirs, and sync existing rulebooks to ChromaDB."""
+    """Initialize database tables, storage dirs, auto-seed games, and sync existing rulebooks to ChromaDB."""
     Base.metadata.create_all(bind=engine)
     DOCS_STORAGE_PATH.mkdir(parents=True, exist_ok=True)
 
@@ -64,31 +67,22 @@ async def lifespan(app: FastAPI):
     except Exception as exc:
         logger.warning(f"Database column check/migration notice: {exc}")
 
-    # Sync rulebooks from database to ChromaDB on startup
+    # Check and auto-seed all 22 popular and classic games
     db = SessionLocal()
     try:
-        games = db.query(models.BoardGame).filter(models.BoardGame.status == "active").all()
-        for g in games:
-            # Backfill sample game specifics if null
-            if g.name.lower() == "catan" and not g.min_players:
-                g.min_players, g.max_players, g.min_age, g.estimated_playtime = 3, 4, 10, 75
-                g.complexity, g.category, g.publisher, g.year_published = "Medium", "Strategy", "KOSMOS", 1995
-            elif g.name.lower() == "monopoly" and not g.min_players:
-                g.min_players, g.max_players, g.min_age, g.estimated_playtime = 2, 8, 8, 90
-                g.complexity, g.category, g.publisher, g.year_published = "Light / Casual", "Family", "Hasbro", 1935
-            elif g.name.lower() == "chess" and not g.min_players:
-                g.min_players, g.max_players, g.min_age, g.estimated_playtime = 2, 2, 6, 30
-                g.complexity, g.category, g.publisher = "Medium", "Abstract Strategy", "Public Domain"
-            elif g.name.lower() == "backgammon" and not g.min_players:
-                g.min_players, g.max_players, g.min_age, g.estimated_playtime = 2, 2, 8, 30
-                g.complexity, g.category, g.publisher = "Light / Casual", "Abstract Strategy", "Public Domain"
-
-            rule_file = DOCS_STORAGE_PATH / g.filename
-            if rule_file.exists():
-                ingest_rulebook(rule_file, game_id=g.id, game_name=g.name)
-        db.commit()
+        active_count = db.query(models.BoardGame).filter(models.BoardGame.status == "active").count()
+        if active_count < 22:
+            logger.info(f"Database currently has {active_count} games. Auto-seeding 22 demo games...")
+            seed_all_games()
+        else:
+            # Sync rulebooks from database to ChromaDB on startup
+            games = db.query(models.BoardGame).filter(models.BoardGame.status == "active").all()
+            for g in games:
+                rule_file = DOCS_STORAGE_PATH / g.filename
+                if rule_file.exists():
+                    ingest_rulebook(rule_file, game_id=g.id, game_name=g.name)
     except Exception as exc:
-        logger.warning(f"Error syncing rulebooks on startup: {exc}")
+        logger.warning(f"Error during startup game sync/seed: {exc}")
     finally:
         db.close()
 

@@ -18,7 +18,8 @@ import requests
 logger = logging.getLogger(__name__)
 
 # Configuration
-CHROMA_PATH = Path(os.getenv("CHROMA_PATH", "./rag_db"))
+BASE_DIR = Path(__file__).resolve().parent
+CHROMA_PATH = Path(os.getenv("CHROMA_PATH", str(BASE_DIR / "rag_db")))
 CHROMA_PATH.mkdir(parents=True, exist_ok=True)
 
 LLM_PROVIDER = os.getenv("LLM_PROVIDER", "ollama").lower()
