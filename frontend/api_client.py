@@ -71,12 +71,37 @@ def get_current_user(token: str) -> tuple[bool, Any]:
 
 # ─── Game Bank API ────────────────────────────────────────────────────────────
 
-def get_games(q: str | None = None, token: str | None = None) -> tuple[bool, Any]:
-    """Search and browse board games in the shared bank."""
+def get_games(
+    q: str | None = None,
+    players: int | None = None,
+    min_players: int | None = None,
+    max_players: int | None = None,
+    min_age: int | None = None,
+    max_playtime: int | None = None,
+    complexity: str | None = None,
+    category: str | None = None,
+    token: str | None = None,
+) -> tuple[bool, Any]:
+    """Search and browse board games with rich filter criteria."""
     url = f"{BACKEND_URL}/games"
-    params = {}
+    params: dict[str, Any] = {}
     if q and q.strip():
         params["q"] = q.strip()
+    if players is not None and players > 0:
+        params["players"] = players
+    if min_players is not None and min_players > 0:
+        params["min_players"] = min_players
+    if max_players is not None and max_players > 0:
+        params["max_players"] = max_players
+    if min_age is not None and min_age > 0:
+        params["min_age"] = min_age
+    if max_playtime is not None and max_playtime > 0:
+        params["max_playtime"] = max_playtime
+    if complexity and complexity.strip() and complexity != "All Complexities":
+        params["complexity"] = complexity.strip()
+    if category and category.strip() and category != "All Categories":
+        params["category"] = category.strip()
+
     try:
         resp = requests.get(url, params=params, headers=_get_headers(token), timeout=10)
         if resp.status_code == 200:
@@ -104,12 +129,37 @@ def upload_game(
     file_bytes: bytes,
     filename: str,
     token: str,
+    min_players: int | None = None,
+    max_players: int | None = None,
+    min_age: int | None = None,
+    estimated_playtime: int | None = None,
+    complexity: str | None = None,
+    category: str | None = None,
+    publisher: str | None = None,
+    year_published: int | None = None,
 ) -> tuple[bool, Any]:
-    """Upload a new board game and its rulebook file to the bank."""
+    """Upload a new board game, metadata, and its rulebook file to the bank."""
     url = f"{BACKEND_URL}/games"
-    data = {"name": name}
+    data: dict[str, Any] = {"name": name}
     if description:
         data["description"] = description
+    if min_players is not None:
+        data["min_players"] = min_players
+    if max_players is not None:
+        data["max_players"] = max_players
+    if min_age is not None:
+        data["min_age"] = min_age
+    if estimated_playtime is not None:
+        data["estimated_playtime"] = estimated_playtime
+    if complexity:
+        data["complexity"] = complexity
+    if category:
+        data["category"] = category
+    if publisher:
+        data["publisher"] = publisher
+    if year_published is not None:
+        data["year_published"] = year_published
+
     files = {"file": (filename, file_bytes)}
     try:
         resp = requests.post(

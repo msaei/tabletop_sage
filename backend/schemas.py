@@ -43,6 +43,14 @@ class TokenData(BaseModel):
 class BoardGameBase(BaseModel):
     name: str = Field(..., min_length=1, max_length=100, description="Board game title")
     description: str | None = Field(default=None, description="Brief summary or description")
+    min_players: int | None = Field(default=None, ge=1, le=100, description="Minimum player count")
+    max_players: int | None = Field(default=None, ge=1, le=100, description="Maximum player count")
+    min_age: int | None = Field(default=None, ge=0, le=120, description="Recommended minimum age")
+    estimated_playtime: int | None = Field(default=None, ge=1, description="Estimated playtime in minutes")
+    complexity: str | None = Field(default=None, description="Complexity / difficulty level (e.g. Light, Medium, Heavy)")
+    category: str | None = Field(default=None, description="Category / genre (e.g. Strategy, Family, Party, Abstract)")
+    publisher: str | None = Field(default=None, description="Publisher or designer studio")
+    year_published: int | None = Field(default=None, description="Publication year")
 
 
 class BoardGameCreate(BoardGameBase):

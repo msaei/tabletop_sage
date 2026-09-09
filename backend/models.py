@@ -60,6 +60,16 @@ class BoardGame(Base):
     uploaded_by_user_id = Column(
         Integer, ForeignKey("users.id"), nullable=False
     )
+    # Specifics & Discovery Metadata
+    min_players = Column(Integer, nullable=True)
+    max_players = Column(Integer, nullable=True)
+    min_age = Column(Integer, nullable=True)  # Recommended minimum age, e.g. 10 for 10+
+    estimated_playtime = Column(Integer, nullable=True)  # Estimated duration in minutes
+    complexity = Column(String(50), nullable=True)  # e.g. "Light", "Medium", "Heavy"
+    category = Column(String(100), nullable=True)  # e.g. "Strategy", "Family", "Party", etc.
+    publisher = Column(String(100), nullable=True)
+    year_published = Column(Integer, nullable=True)
+
     status = Column(String(20), default="active", nullable=False)  # "active" | "flagged"
     uploaded_at = Column(
         DateTime(timezone=True),

@@ -75,6 +75,33 @@ st.markdown(
         font-size: 0.8rem;
         font-weight: 600;
     }
+    .meta-badge {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #e2e8f0;
+        padding: 3px 9px;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        margin-right: 6px;
+        margin-bottom: 5px;
+    }
+    .meta-category {
+        background: rgba(99, 102, 241, 0.18);
+        border-color: rgba(99, 102, 241, 0.4);
+        color: #c7d2fe;
+    }
+    .meta-complexity {
+        background: rgba(168, 85, 247, 0.18);
+        border-color: rgba(168, 85, 247, 0.4);
+        color: #e9d5ff;
+    }
+    .meta-publisher {
+        background: rgba(14, 165, 233, 0.15);
+        border-color: rgba(14, 165, 233, 0.35);
+        color: #bae6fd;
+    }
     .citation-box {
         background: rgba(99, 102, 241, 0.08);
         border-left: 3px solid #6366f1;
@@ -87,6 +114,57 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+
+def render_game_metadata_badges(game: dict):
+    """Renders visual pill badges for game specifics (player count, age, playtime, category, complexity, publisher)."""
+    badges = []
+
+    # Player count (min, max, or exact)
+    min_p = game.get("min_players")
+    max_p = game.get("max_players")
+    if min_p and max_p:
+        if min_p == max_p:
+            badges.append(f'<span class="meta-badge">👥 {min_p} Players</span>')
+        else:
+            badges.append(f'<span class="meta-badge">👥 {min_p}–{max_p} Players</span>')
+    elif min_p:
+        badges.append(f'<span class="meta-badge">👥 {min_p}+ Players</span>')
+    elif max_p:
+        badges.append(f'<span class="meta-badge">👥 Up to {max_p} Players</span>')
+
+    # Minimum age
+    min_age = game.get("min_age")
+    if min_age:
+        badges.append(f'<span class="meta-badge">🎂 Age {min_age}+</span>')
+
+    # Estimated playtime
+    playtime = game.get("estimated_playtime")
+    if playtime:
+        badges.append(f'<span class="meta-badge">⏱️ {playtime} min</span>')
+
+    # Category / Genre
+    category = game.get("category")
+    if category:
+        badges.append(f'<span class="meta-badge meta-category">🧩 {category}</span>')
+
+    # Complexity
+    complexity = game.get("complexity")
+    if complexity:
+        badges.append(f'<span class="meta-badge meta-complexity">⚖️ {complexity}</span>')
+
+    # Publisher & Year
+    pub = game.get("publisher")
+    yr = game.get("year_published")
+    if pub and yr:
+        badges.append(f'<span class="meta-badge meta-publisher">🏢 {pub} ({yr})</span>')
+    elif pub:
+        badges.append(f'<span class="meta-badge meta-publisher">🏢 {pub}</span>')
+    elif yr:
+        badges.append(f'<span class="meta-badge">📅 {yr}</span>')
+
+    if badges:
+        st.markdown(f'<div style="margin: 0.4rem 0 0.5rem 0;">{" ".join(badges)}</div>', unsafe_allow_html=True)
 
 # ─── Session State Initialization ─────────────────────────────────────────────
 
@@ -202,26 +280,97 @@ def open_game_workspace(game_id: int, game_name: str):
 if st.session_state.nav_page == "🔍 Game Bank":
     st.markdown('<div class="main-header">Board Game Bank</div>', unsafe_allow_html=True)
     st.markdown(
-        '<div class="sub-header">Search available board games, browse official rulebooks, and curate your personal library.</div>',
+        '<div class="sub-header">Search available board games, filter by specifics, browse rulebooks, and curate your personal library.</div>',
         unsafe_allow_html=True,
     )
 
-    search_col, _ = st.columns([3, 1])
-    with search_col:
-        search_query = st.text_input(
-            "Search game bank by title or keyword...",
-            placeholder="e.g. Catan, Monopoly, trading, dice...",
-            key="bank_search_input",
-        )
+    search_query = st.text_input(
+        "Search game bank by title, category, publisher, or keyword...",
+        placeholder="e.g. Catan, Monopoly, Strategy, KOSMOS, trading, dice...",
+        key="bank_search_input",
+    )
 
-    ok, games = api_client.get_games(q=search_query, token=st.session_state.token)
+    # Advanced Filter Bar
+    with st.expander("🎯 Filter by Player Count, Category, Playtime & Complexity", expanded=False):
+        col_f1, col_f2, col_f3, col_f4 = st.columns(4)
+        with col_f1:
+            selected_players = st.selectbox(
+                "👥 Player Count",
+                options=["Any Players", "1 Player (Solo)", "2 Players", "3 Players", "4 Players", "5 Players", "6+ Players"],
+                index=0,
+            )
+        with col_f2:
+            selected_category = st.selectbox(
+                "🧩 Category / Genre",
+                options=[
+                    "All Categories",
+                    "Strategy",
+                    "Family",
+                    "Party",
+                    "Cooperative",
+                    "Abstract Strategy",
+                    "Economic",
+                    "Deck-Building",
+                    "Dice",
+                    "Trivia",
+                ],
+                index=0,
+            )
+        with col_f3:
+            selected_complexity = st.selectbox(
+                "⚖️ Complexity",
+                options=["All Complexities", "Light / Casual", "Medium", "Heavy / Expert"],
+                index=0,
+            )
+        with col_f4:
+            selected_playtime = st.selectbox(
+                "⏱️ Max Playtime",
+                options=["Any Playtime", "Under 30 min", "Under 45 min", "Under 60 min", "Under 90 min", "Under 120 min"],
+                index=0,
+            )
+
+    # Map filter selections to API params
+    player_param = None
+    if selected_players == "1 Player (Solo)":
+        player_param = 1
+    elif selected_players == "2 Players":
+        player_param = 2
+    elif selected_players == "3 Players":
+        player_param = 3
+    elif selected_players == "4 Players":
+        player_param = 4
+    elif selected_players == "5 Players":
+        player_param = 5
+    elif selected_players == "6+ Players":
+        player_param = 6
+
+    playtime_param = None
+    if selected_playtime == "Under 30 min":
+        playtime_param = 30
+    elif selected_playtime == "Under 45 min":
+        playtime_param = 45
+    elif selected_playtime == "Under 60 min":
+        playtime_param = 60
+    elif selected_playtime == "Under 90 min":
+        playtime_param = 90
+    elif selected_playtime == "Under 120 min":
+        playtime_param = 120
+
+    ok, games = api_client.get_games(
+        q=search_query,
+        players=player_param,
+        category=selected_category,
+        complexity=selected_complexity,
+        max_playtime=playtime_param,
+        token=st.session_state.token,
+    )
 
     if not ok:
         st.error(f"Could not load game bank: {games}")
     elif not games:
-        st.info("No board games found matching your search query. Try uploading a new game!")
+        st.info("No board games found matching your search or filter criteria. Try broadening your filters or uploading a new game!")
     else:
-        st.caption(f"Showing **{len(games)}** board games in the bank:")
+        st.caption(f"Showing **{len(games)}** board games matching your criteria:")
 
         for game in games:
             with st.container():
@@ -229,6 +378,7 @@ if st.session_state.nav_page == "🔍 Game Bank":
 
                 with col_info:
                     st.markdown(f"### 🎲 **{game['name']}**")
+                    render_game_metadata_badges(game)
                     if game.get("description"):
                         st.markdown(f"*{game['description']}*")
                     st.caption(f"📄 Rulebook: `{game['filename']}` | Ingested: {game['uploaded_at'][:10]}")
@@ -293,6 +443,7 @@ elif st.session_state.nav_page == "📚 My Library":
 
                     with col_info:
                         st.markdown(f"### 🎲 **{game['name']}**")
+                        render_game_metadata_badges(game)
                         if game.get("description"):
                             st.write(game["description"])
                         st.caption(f"File: `{game['filename']}`")
@@ -329,6 +480,7 @@ elif st.session_state.nav_page == "⚔️ Game Workspace":
         # Game Selector Header
         game_names = [g["name"] for g in all_games]
         game_map = {g["name"]: g["id"] for g in all_games}
+        game_by_name = {g["name"]: g for g in all_games}
 
         # Determine current selection index
         current_idx = 0
@@ -351,6 +503,8 @@ elif st.session_state.nav_page == "⚔️ Game Workspace":
             st.session_state.selected_game_id = game_map[selected_name]
 
         current_game_id = st.session_state.selected_game_id
+        selected_game_data = game_by_name.get(selected_name, {})
+        render_game_metadata_badges(selected_game_data)
 
         # Workspace Tabs
         tab_assistant, tab_rulebook = st.tabs(["🤖 Rules Referee (RAG Chat)", "📖 Official Rulebook"])
@@ -500,12 +654,50 @@ elif st.session_state.nav_page == "📤 Upload Game":
         with st.form("upload_game_form", clear_on_submit=True):
             game_title = st.text_input(
                 "Board Game Title *",
-                placeholder="e.g., Ticket to Ride, Carcassonne, Wingspan",
+                placeholder="e.g., Wingspan, Ticket to Ride, Catan, Scythe",
             )
             game_desc = st.text_area(
                 "Game Description / Summary (Optional)",
-                placeholder="e.g., A railway-themed strategy board game for 2–5 players.",
+                placeholder="e.g., A competitive, medium-weight, card-driven, engine-building board game.",
             )
+
+            st.markdown("#### 🎯 Game Specifics & Details (Optional)")
+            col_u1, col_u2, col_u3 = st.columns(3)
+            with col_u1:
+                u_min_p = st.number_input("Min Players", min_value=1, max_value=100, value=2, step=1)
+                u_max_p = st.number_input("Max Players", min_value=1, max_value=100, value=4, step=1)
+            with col_u2:
+                u_min_age = st.number_input("Recommended Min Age (e.g. 10 for 10+)", min_value=0, max_value=120, value=10, step=1)
+                u_playtime = st.number_input("Estimated Playtime (Minutes)", min_value=1, max_value=1440, value=60, step=5)
+            with col_u3:
+                u_category = st.selectbox(
+                    "Category / Genre",
+                    options=[
+                        "Strategy",
+                        "Family",
+                        "Party",
+                        "Cooperative",
+                        "Abstract Strategy",
+                        "Economic",
+                        "Deck-Building",
+                        "Dice",
+                        "Trivia",
+                        "Thematic",
+                    ],
+                    index=0,
+                )
+                u_complexity = st.selectbox(
+                    "Complexity Level",
+                    options=["Light / Casual", "Medium", "Heavy / Expert"],
+                    index=1,
+                )
+
+            col_pub1, col_pub2 = st.columns(2)
+            with col_pub1:
+                u_publisher = st.text_input("Publisher / Game Studio (Optional)", placeholder="e.g. Stonemaier Games, Days of Wonder")
+            with col_pub2:
+                u_year = st.number_input("Year Published (Optional)", min_value=0, max_value=2099, value=2024, step=1)
+
             rulebook_file = st.file_uploader(
                 "Upload Official Rulebook Document *",
                 type=["txt", "md"],
@@ -528,6 +720,14 @@ elif st.session_state.nav_page == "📤 Upload Game":
                             file_bytes=file_bytes,
                             filename=rulebook_file.name,
                             token=st.session_state.token,
+                            min_players=int(u_min_p) if u_min_p else None,
+                            max_players=int(u_max_p) if u_max_p else None,
+                            min_age=int(u_min_age) if u_min_age else None,
+                            estimated_playtime=int(u_playtime) if u_playtime else None,
+                            complexity=u_complexity,
+                            category=u_category,
+                            publisher=u_publisher.strip() if u_publisher else None,
+                            year_published=int(u_year) if u_year > 0 else None,
                         )
 
                         if up_ok:
