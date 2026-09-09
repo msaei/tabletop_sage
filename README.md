@@ -61,7 +61,8 @@ Before running the application, ensure the following are installed:
 
 ### 1. Clone the Repository
 ```bash
-cd /Users/mehdi/Documents/code_temple_exeercises/module-09-capstone/project/tabletop_sage
+git clone https://github.com/your-username/tabletop_sage.git
+cd tabletop_sage
 ```
 
 ### 2. Configure Environment Variables
