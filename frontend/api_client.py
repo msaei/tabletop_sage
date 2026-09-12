@@ -188,7 +188,20 @@ def get_rulebook(game_id: int) -> tuple[bool, Any]:
         return False, f"Server connection error: {exc!s}"
 
 
+def delete_game(game_id: int, token: str) -> tuple[bool, Any]:
+    """Permanently delete a board game, rulebook file, and vector index from the bank."""
+    url = f"{BACKEND_URL}/games/{game_id}"
+    try:
+        resp = requests.delete(url, headers=_get_headers(token), timeout=15)
+        if resp.status_code == 200:
+            return True, resp.json()
+        return False, resp.json().get("detail", "Failed to delete game")
+    except requests.exceptions.RequestException as exc:
+        return False, f"Server connection error: {exc!s}"
+
+
 # ─── Personal Library API ─────────────────────────────────────────────────────
+
 
 def get_library(token: str) -> tuple[bool, Any]:
     """Fetch the authenticated user's saved games library."""

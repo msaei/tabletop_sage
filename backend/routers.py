@@ -44,6 +44,7 @@ try:
     from database import get_db
     from rag_pipeline import (
         check_rag_health,
+        delete_game_from_index,
         ingest_rulebook,
         query_rag_pipeline,
     )
@@ -59,6 +60,7 @@ except ImportError:
     from .database import get_db
     from .rag_pipeline import (
         check_rag_health,
+        delete_game_from_index,
         ingest_rulebook,
         query_rag_pipeline,
     )
@@ -416,7 +418,58 @@ def get_game_rulebook(
     }
 
 
+@games_router.delete(
+    "/{game_id}",
+    summary="Delete a board game, its rulebook, and its vector index from the bank",
+)
+def delete_game(
+    game_id: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user),
+):
+    game = db.query(models.BoardGame).filter(models.BoardGame.id == game_id).first()
+    if not game:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Board game not found",
+        )
+
+    # Permission check: admin or the user who uploaded the game
+    if current_user.role != "admin" and game.uploaded_by_user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You do not have permission to delete this game.",
+        )
+
+    # 1. Remove vector chunks from ChromaDB
+    try:
+        delete_game_from_index(game_id)
+        logger.info(f"Removed vector index chunks for game_id={game_id}")
+    except Exception as exc:
+        logger.warning(f"Failed to delete vector index for game_id={game_id}: {exc}")
+
+    # 2. Remove physical rulebook file
+    file_path = DOCS_STORAGE_PATH / game.filename
+    try:
+        if file_path.exists():
+            file_path.unlink(missing_ok=True)
+            logger.info(f"Deleted rulebook file: {file_path}")
+    except Exception as exc:
+        logger.warning(f"Failed to unlink rulebook file: {exc}")
+
+    # 3. Delete from database (cascades library entries and chats)
+    game_name = game.name
+    db.delete(game)
+    db.commit()
+
+    return {
+        "message": f"Board game '{game_name}' deleted successfully",
+        "game_id": game_id,
+    }
+
+
 # ─── Personal Library Endpoints ───────────────────────────────────────────────
+
 
 @library_router.get(
     "",

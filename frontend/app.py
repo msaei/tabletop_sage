@@ -407,10 +407,27 @@ if st.session_state.nav_page == "🔍 Game Bank":
                                     st.rerun()
                                 else:
                                     st.error(add_res)
+
+                        # Action 3: Delete Game (if uploader or admin)
+                        if st.session_state.user:
+                            is_admin = st.session_state.user.get("role") == "admin"
+                            is_uploader = game.get("uploaded_by_user_id") == st.session_state.user.get("id")
+                            if is_admin or is_uploader:
+                                if st.button("🗑️ Delete from Bank", key=f"bank_del_{game['id']}", use_container_width=True):
+                                    del_ok, del_res = api_client.delete_game(game["id"], st.session_state.token)
+                                    if del_ok:
+                                        st.success(f"Game '{game['name']}' deleted from bank.")
+                                        if st.session_state.selected_game_id == game["id"]:
+                                            st.session_state.selected_game_id = None
+                                            st.session_state.selected_game_name = None
+                                        st.rerun()
+                                    else:
+                                        st.error(del_res)
                     else:
                         st.caption("🔒 *Log in to save to library*")
 
                 st.divider()
+
 
 
 # ─── VIEW 2: 📚 My Library ────────────────────────────────────────────────────

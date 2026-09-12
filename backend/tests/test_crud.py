@@ -166,4 +166,33 @@ def test_upload_game_missing_file_returns_422():
     assert resp.status_code == 422
 
 
+def test_delete_game_from_bank():
+    token = _get_auth_token()
+    game_title = f"Delete Test Game {uuid.uuid4().hex[:4]}"
+    file_content = b"Setup: Rules to be deleted.\nGoal: Test game deletion."
 
+    # 1. Upload game
+    upload_resp = client.post(
+        "/games",
+        data={"name": game_title, "description": "To be deleted"},
+        files={"file": ("del_game.txt", io.BytesIO(file_content), "text/plain")},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert upload_resp.status_code == 201
+    game_id = upload_resp.json()["id"]
+
+    # Verify game exists
+    get_resp = client.get(f"/games/{game_id}")
+    assert get_resp.status_code == 200
+
+    # 2. Delete game
+    del_resp = client.delete(
+        f"/games/{game_id}",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert del_resp.status_code == 200
+    assert del_resp.json()["game_id"] == game_id
+
+    # 3. Verify game no longer exists
+    get_after = client.get(f"/games/{game_id}")
+    assert get_after.status_code == 404
